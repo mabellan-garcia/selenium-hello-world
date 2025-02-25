@@ -2,6 +2,8 @@ package utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.Date;
@@ -20,6 +22,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import lombok.Getter;
@@ -39,13 +42,19 @@ public class SeleniumDriver {
 	private static String defaultWaitTime;
 	private static final boolean headless = Boolean.parseBoolean(System.getProperty("headless"));
 	private static final String pathToDriver = System.getProperty("pathToDriver");
+	private static String remoteSeleniumUrl;
 	
 	
 	private SeleniumDriver(WebDriverPreferences webDriverPreferences) {
 		SeleniumDriver.defaultWaitTime = config.getProperty("defaultWaitTime");
 		SeleniumDriver.browser = System.getProperty("browser", config.getProperty("browser"));
+		SeleniumDriver.remoteSeleniumUrl = System.getProperty("remoteSeleniumUrl");
 		
-		setUpWebDriver(webDriverPreferences);
+		try {
+			setUpWebDriver(webDriverPreferences);
+		} catch (Exception e) {
+			throw new RuntimeException("Error inicializando webdriver", e);
+		}
 
 		wait.set(new WebDriverWait(driver.get(), SeleniumDriver.timeout));
 		actions.set(new Actions(driver.get()));
@@ -54,20 +63,31 @@ public class SeleniumDriver {
 		driver.get().getWindowHandle();
 	}
 	
-	private static void setUpWebDriver(WebDriverPreferences webDriverPreferences) {
+	private static void setUpWebDriver(WebDriverPreferences webDriverPreferences) throws MalformedURLException {
 		if (SeleniumDriver.browser.equals("chrome")) {
 			if (pathToDriver != null) {
 				System.setProperty("webdriver.chrome.driver", pathToDriver);
 			}
 
 			ChromeOptions chromeOptions = getChromeOptions(webDriverPreferences);
-			driver.set(new ChromeDriver(chromeOptions));
+			if(SeleniumDriver.remoteSeleniumUrl != null 
+				&& !SeleniumDriver.remoteSeleniumUrl.isEmpty()) {
+				driver.set(new RemoteWebDriver(new URL(SeleniumDriver.remoteSeleniumUrl), chromeOptions));
+			} else {
+				driver.set(new ChromeDriver(chromeOptions));
+			}
+			
 
 		} else if (SeleniumDriver.browser.equals("firefox")) {
 			System.setProperty("webdriver.firefox.driver", pathToDriver);
 
 			FirefoxOptions firefoxOptions = getFirefoxOptions(webDriverPreferences);
-			driver.set(new FirefoxDriver(firefoxOptions));
+			if(SeleniumDriver.remoteSeleniumUrl != null 
+					&& !SeleniumDriver.remoteSeleniumUrl.isEmpty()) {
+				driver.set(new RemoteWebDriver(new URL(SeleniumDriver.remoteSeleniumUrl), firefoxOptions));
+			} else {
+				driver.set(new FirefoxDriver(firefoxOptions));
+			}
 
 		} else {
 			if (pathToDriver != null) {
@@ -75,7 +95,12 @@ public class SeleniumDriver {
 			}
 
 			EdgeOptions edgeOptions = getEdgeOptions(webDriverPreferences);
-			driver.set(new EdgeDriver(edgeOptions));
+			if(SeleniumDriver.remoteSeleniumUrl != null 
+					&& !SeleniumDriver.remoteSeleniumUrl.isEmpty()) {
+				driver.set(new RemoteWebDriver(new URL(SeleniumDriver.remoteSeleniumUrl), edgeOptions));
+			} else {
+				driver.set(new EdgeDriver(edgeOptions));
+			}
 		}
 	}
 
