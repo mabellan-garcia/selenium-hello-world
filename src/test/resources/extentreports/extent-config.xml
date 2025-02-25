@@ -1,0 +1,15 @@
+<extentreports>
+    <configuration>
+        <theme>standard</theme>
+        <encoding>utf-8</encoding>
+        <protocol>https</protocol>
+        <css>
+            .logo {
+                background-image: url('../src/test/resources/extentreports/img/logo.png');
+            }
+        </css>
+        <js>
+            console.log('PRUEBA EJECUCION SCRIPT');
+        </js>
+    </configuration>
+</extentreports>
