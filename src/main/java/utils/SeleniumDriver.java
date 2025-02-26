@@ -72,7 +72,7 @@ public class SeleniumDriver {
 			ChromeOptions chromeOptions = getChromeOptions(webDriverPreferences);
 			if(SeleniumDriver.remoteSeleniumUrl != null 
 				&& !SeleniumDriver.remoteSeleniumUrl.isEmpty()) {
-				driver.set(new RemoteWebDriver(new URL(SeleniumDriver.remoteSeleniumUrl), chromeOptions));
+				driver.set(new RemoteWebDriver(new URL(SeleniumDriver.remoteSeleniumUrl), chromeOptions, false));
 			} else {
 				driver.set(new ChromeDriver(chromeOptions));
 			}
@@ -84,7 +84,7 @@ public class SeleniumDriver {
 			FirefoxOptions firefoxOptions = getFirefoxOptions(webDriverPreferences);
 			if(SeleniumDriver.remoteSeleniumUrl != null 
 					&& !SeleniumDriver.remoteSeleniumUrl.isEmpty()) {
-				driver.set(new RemoteWebDriver(new URL(SeleniumDriver.remoteSeleniumUrl), firefoxOptions));
+				driver.set(new RemoteWebDriver(new URL(SeleniumDriver.remoteSeleniumUrl), firefoxOptions, false));
 			} else {
 				driver.set(new FirefoxDriver(firefoxOptions));
 			}
@@ -97,7 +97,7 @@ public class SeleniumDriver {
 			EdgeOptions edgeOptions = getEdgeOptions(webDriverPreferences);
 			if(SeleniumDriver.remoteSeleniumUrl != null 
 					&& !SeleniumDriver.remoteSeleniumUrl.isEmpty()) {
-				driver.set(new RemoteWebDriver(new URL(SeleniumDriver.remoteSeleniumUrl), edgeOptions));
+				driver.set(new RemoteWebDriver(new URL(SeleniumDriver.remoteSeleniumUrl), edgeOptions, false));
 			} else {
 				driver.set(new EdgeDriver(edgeOptions));
 			}
